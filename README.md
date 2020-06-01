@@ -64,11 +64,8 @@ Notar que `cachito` forma parte de la flota de _ambas_ dependencias.
 Para cada dependencia, hacer asserts sobre: el peso total de la flota, si está o no bien equipada, la capacidad total en color azul, el color del rodado más rápido, si es grande o no, y la capacidad faltante. 
 
 Va una ayudita: la capacidad faltante de deportes es de 25 personas (la flota puede llevar: 12 personas en los 3 Corsa, más 3 del Kwid y 5 del auto especial; total 20), mientras que la de cultura es de 5 personas (puede llevar en total 26: 6 de los Kwid con tanque adicional, más 4 de la Kwid sin tanque, más 4 de cachito, más 12 de la Trafic dado que tiene el interior popular).	
-<br>
 
-**Megaimportante**
-
-Hacer el diagrama de objetos correspondiente a este test.
+<br/>
 
 
 ## Etapa 2: modelo de pedidos
@@ -107,10 +104,11 @@ Agregar lo que haga falta al modelo para que se pueda conocer, para una dependen
 
 También debe ser posible, enviando un mensaje al objeto que representa a una dependencia, _relajar_ todos los pedidos que tenga registrados.
 
+ 
 
-## Extra - un poco de geografía
+## Etapa 4: posiciones y Game
 
-Agregarle a los Chevrolet Corsa una `Position` que indique su ubicación en un mapa de coordenadas. Supongamos que el mapa incluye las posiciones desde (0,0) hasta (15,15).
+Agregarle a los Chevrolet Corsa un atributo `position` que indique su ubicación en un mapa de coordenadas. Supongamos que el mapa incluye las posiciones desde (0,0) hasta (15,15).
 La clase `Position` "viene con Wollok", pero para usarla hay que incluir este import: 
 ```
 import wollok.game.*
@@ -119,19 +117,78 @@ import wollok.game.*
 Este código crea una instancia de `Position`: `new Position(x = 4, y = 7)`.
 Para ver qué mensajes entienden estos objetos, mirar en https://www.wollok.org/documentacion/wollokdoc/, entrar por "game.wlk" y buscar la clase "Position".
 
-Por otro lado, definir objetos que representen a las distintas direcciones, por ejemplo `norte`, `sur`, etc., de forma tal que a un vehículo se le pueda decir:
+Otra forma de crear una instancia de `Position` es usando el objeto `game`: `game.at(4,7)`. Para usar a `game`, también hay que incluir el `import wollok.game.*`.  
+
+Agregar lo que haga falta en la clase que modela a los Corsa para que puedan responder a las consultas
+- `pasoPor(posicion)`, o sea, si alguna vez estuvo en esa posición. Ayuda: hay que agregar algo en el método que cambia la posición.
+- `pasoPorFila(numero)`, la fila es el "x" de las posiciones. P.ej. si las posiciones en donde estuvo `cachito` fueron `(3,5)`, `(3.6)`, `(3,7)` y `(4,7)`, entonces pasó por las filas 3 y 4, y ninguna otra.
+- `recorrioFilas(lista_de_numeros)`, o sea, si pasó por todas las filas en la lista. P.ej. `cachito.recorrioFilas([3,4,5])` tiene que dar `true` si `cachito` pasó por la fila 3, por la 4 y por la 5.
+
+**Atenti**  
+para resolver las últimas tres consultas, hay que agregar algo a la memoria de los Corsa.
+
+
+### Meter un Corsa en el game
+
+Aprovechando que los Corsa ya tienen posición (es importante que se llame `position`) agregarle una imagen y armar un programa que pone un auto en un Wollok Game.  
+Hay un programa `corsasEnElGame.wpgm`, pueden usar ese.
+
+Darle movimiento al auto con las flechas, y definir tres teclas para cambiarle el color, elegir para eso tres colores. P.ej. con "R" cambia a rojo, con "A" a azul, con "V" a verde.  
+Para esto, buscar tres imágenes de autito en colores distintos, del tamaño que le gustan a Wollok Game, o sea 50x50 píxeles.
+
+Recuerden que las imágenes tienen que estar en la carpeta `assets`, dejamos una de un auto rojo para que tengan de ejemplo.
+
+#### Sugerencia (que pueden tomar o no)
+  
+Acá puede venir bien tener objetos que representen a cada color, p.ej. 
+```
+object blanco { }
+object rojo { }
+object azul { }
+object beige { }
+object negro { }
+object verde { }
+```
+y agregarle a cada color una consulta para que te diga el nombre de la imagen. Así se evitan los "if" en el método `image()` en la clase de los Corsa.
+
+P.ej. 
+```
+object rojo {
+    method image() { return "autoRojo.png" } 
+}
+```
+
+## Etapa 5: más sobre posiciones y Game
+
+### Varios Corsa en el Game
+Agregar más de un Corsa al auto. Acá pueden elegir el "auto activo" con teclas, p.ej. tengo 3 corsas, uso las teclas 1,2,3 para elegirlos. Pueden acceder a las teclas numéricas usando p.ej. `keyboard.num1()`.
+
+El movimiento y el cambio de color se aplican al Corsa activo.
+
+También pueden tener un modo "todos" en los que el movimiento y cambio de color se aplican a todos.
+
+
+### Paredes
+Definir objetos que representan paredes. Cada pared tiene una resistencia. Cuando un Corsa se "choca" con una pared (o sea, quiere ir a una celda en la que hay una pared), 
+- si la resistencia de la pared es 0, entonces el Corsa pasa y la pared desaparece
+- si no, el Corsa se queda donde está, y la resistencia de la pared disminuye en uno.
+Pueden ponerle distintas imágenes a las paredes, de acuerdo a su resistencia.
+
+### Direcciones
+
+Definir objetos que representen a las distintas direcciones, por ejemplo `norte`, `sur`, etc., de forma tal que a un vehículo se le pueda decir:
 `moverseHacia(direccion)`. P.ej. si se crea un vehículo así:
 ``` 
-var miAutito = new ChevroletCorsa(posicion = new Position(x=3,y=6), ...)
+var miAutito = new ChevroletCorsa()
+miAutito.position(game.at(3,6))
 ``` 
 y después se hace `miAutito.moverse(norte)`, la posición del vehículo debería pasar a ser (3,7).
 
 Después, agregarle estos métodos:
 - `repetirUltimoMovimiento()`
-- `pasoPor(posicion)`
 - `estaEn(region)` donde hay que crear los objetos que representan regiones. Arranquemos con regiones rectangulares, por ejemplo del (3,3) al (5,8).
 
-Después de esto, lograr que los objetos que representan regiones entiendan los mensajes `union(region)` e `interseccion(region)`, que devuelven las regiones que se indica. ¡OJO! que la unión, o la intersección, de dos regiones rectangulares, puede no ser rectangular.
+Después de esto, lograr que los objetos que representan regiones entiendan los mensajes `union(region)` e `interseccion(region)`, que devuelven las regiones que se indica. ¡OJO! que la unión de dos regiones rectangulares, puede no ser rectangular.
 
 
 ## Extra - desafíos con colecciones
