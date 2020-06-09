@@ -1,0 +1,70 @@
+import rodados.*
+import dependencia.*
+import trafic.*
+
+test "test Deportes" {
+	/// Dependencias y cachito
+	const deportes = new Dependencia ()
+	deportes.setCantidadDeEmpleados(45)
+	
+	const cachito = new ChevroletCorsa()
+	cachito.setColor("rojo")
+	
+	//// rodados de deportes 
+	const corsaAzul = new ChevroletCorsa()
+	corsaAzul.setColor("azul")
+	const corsaVerde = new ChevroletCorsa()
+	corsaVerde.setColor("verde")
+	const kwid1 = new RenaultKwid()
+	const autoEspecial1 = new AutosEspeciales()
+	autoEspecial1.setCapacidad(5)
+	autoEspecial1.setVelMaxima(160)
+	autoEspecial1.setPeso(1200)
+	autoEspecial1.setColor("beige")
+	
+	/// flota deportes
+	
+	deportes.agregarFlota(cachito)
+	deportes.agregarFlota(corsaAzul )
+	deportes.agregarFlota(corsaVerde)
+	deportes.agregarFlota( kwid1 )
+	deportes.agregarFlota(autoEspecial1)
+	
+	// assert
+	assert.equals(6450,deportes.pesoTotalFlota())
+	assert.that(deportes.estaBienEquipada())
+	assert.equals(7,deportes.capacidadTotalEnColor("azul"))
+	assert.equals("beige",deportes.colorDelRodadoMasRapido())
+	assert.that(deportes.esGrande())
+	assert.equals(25,deportes.capacidadFaltante())
+}
+
+test "test Cultura"
+{
+	const cultura = new Dependencia()
+	cultura.setCantidadDeEmpleados(31)
+	const cachito = new ChevroletCorsa()
+	cachito.setColor("rojo")
+	/// rodados de cultura
+	const kwidTanquePuesto = new RenaultKwid()
+	const kwidTanquePuesto2 = new RenaultKwid()
+	const kwidSinTanque = new RenaultKwid()
+	kwidSinTanque.sinTanqueAdicional()
+	trafic.setInterior(interiorPopular)
+	trafic.setMotor(motorBataton)
+	
+	//// flota de cultura
+	cultura.agregarFlota(cachito)
+	cultura.agregarFlota(kwidTanquePuesto )
+	cultura.agregarFlota(kwidTanquePuesto2)
+	cultura.agregarFlota(kwidSinTanque)
+	cultura.agregarFlota(trafic)
+	
+	/// assert
+	assert.equals(10700,cultura.pesoTotalFlota())
+	assert.notThat(cultura.estaBienEquipada())
+	assert.equals(10,cultura.capacidadTotalEnColor("azul"))
+	assert.equals("rojo",cultura.colorDelRodadoMasRapido())
+	assert.notThat(cultura.esGrande())
+	assert.equals(5,cultura.capacidadFaltante())
+}

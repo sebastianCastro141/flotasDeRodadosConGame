@@ -1,0 +1,35 @@
+import rodados.*
+import pedidos.*
+
+test "testX" {
+	//auto
+	const cachito = new ChevroletCorsa()
+	cachito.setColor("rojo")
+	
+	//pedido
+	const pedido = new Pedidos()
+	pedido.distanciaARecorrer(960)
+	pedido.tiempoMaximo(8)
+	pedido.cantidadDePasajeros(4)
+	pedido.coloresIncompatibles(["azul","negro"])
+	
+	//metodos de pedido
+	assert.equals(120,pedido.velocidadRequerida())
+	assert.that(pedido.puedeSatisfacer(cachito))
+	
+	// metodo de pedido si cambia los colores
+	pedido.coloresIncompatibles(["azul", "negro", "rojo"])
+	assert.notThat(pedido.puedeSatisfacer(cachito))
+	
+	// cambiando la cantidad de pasajeros
+	pedido.coloresIncompatibles(["azul","negro"])
+	pedido.cantidadDePasajeros(6)
+	assert.notThat(pedido.puedeSatisfacer(cachito))
+	
+	// si cambiamos solo el tiempo maximo
+	pedido.cantidadDePasajeros(4)
+	pedido.coloresIncompatibles(["azul","negro"])
+	pedido.tiempoMaximo(6)
+	assert.notThat(pedido.puedeSatisfacer(cachito))
+
+}
